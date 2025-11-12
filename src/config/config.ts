@@ -6,4 +6,4 @@ export const dbConfig = {
   database: 'funeral_db'
 };
 
-export const baseDomain = 'funeral.com';
+export const baseDomain = 'mizo.co.za';

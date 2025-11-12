@@ -26,6 +26,10 @@ export const tenantMiddleware = async (req: RequestWithTenant, res: Response, ne
       if (subdomain) {
         tenantDomain = subdomain;
         console.log(`  ➜ Resolved from subdomain: ${tenantDomain}`);
+      } else {
+        // No subdomain - this is the base domain (host tenant)
+        tenantDomain = 'host';
+        console.log(`  ➜ Base domain detected (${host}), using 'host' tenant`);
       }
     }
     // For localhost development, default to 'host' tenant
