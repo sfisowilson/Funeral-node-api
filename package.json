@@ -1,0 +1,46 @@
+{
+  "name": "nodeapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec ts-node src/https-server.ts",
+    "start:https": "nodemon --exec ts-node src/https-server.ts",
+    "db:sync": "ts-node src/db/sync.ts",
+    "db:setup": "ts-node src/db/setup.ts",
+    "test:register-tenant": "ts-node test-register-tenant.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/nodemailer": "^7.0.3",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "mysql2": "^3.15.3",
+    "nodemailer": "^7.0.10",
+    "sequelize": "^6.37.7",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.9.1",
+    "@types/sequelize": "^4.28.20",
+    "@types/swagger-jsdoc": "^6.0.2",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/uuid": "^10.0.0",
+    "@types/yamljs": "^0.2.34",
+    "swagger-jsdoc": "^6.2.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
