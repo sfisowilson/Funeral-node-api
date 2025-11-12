@@ -54,16 +54,23 @@ const loadTenantDomainsForCors = async () => {
     dynamicCorsOrigins.add('http://127.0.0.1:4200');
     dynamicCorsOrigins.add('http://127.0.0.1:3000');
     
-    // Add all tenant domains
+    // Add base domain
+    dynamicCorsOrigins.add('http://mizo.co.za');
+    dynamicCorsOrigins.add('https://mizo.co.za');
+    dynamicCorsOrigins.add('http://mizo.co.za:4200');
+    dynamicCorsOrigins.add('https://mizo.co.za:4200');
+    
+    // Add all tenant domains (subdomains of mizo.co.za)
     tenants.forEach(tenant => {
-      if (tenant.domain) {
-        dynamicCorsOrigins.add(`http://${tenant.domain}.funeral.com:4200`);
-        dynamicCorsOrigins.add(`https://${tenant.domain}.funeral.com:4200`);
-        dynamicCorsOrigins.add(`http://${tenant.domain}.funeral.com`);
-        dynamicCorsOrigins.add(`https://${tenant.domain}.funeral.com`);
+      if (tenant.domain && tenant.domain !== 'host') {
+        dynamicCorsOrigins.add(`http://${tenant.domain}.mizo.co.za`);
+        dynamicCorsOrigins.add(`https://${tenant.domain}.mizo.co.za`);
+        dynamicCorsOrigins.add(`http://${tenant.domain}.mizo.co.za:4200`);
+        dynamicCorsOrigins.add(`https://${tenant.domain}.mizo.co.za:4200`);
       }
     });
     
+    console.log('CORS origins initialized');
     console.log('Loaded CORS origins for', dynamicCorsOrigins.size, 'domains');
   } catch (error) {
     console.error('Error loading tenant domains for CORS:', error);
