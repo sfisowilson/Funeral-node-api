@@ -6,4 +6,5 @@ export const dbConfig = {
   database: 'funeral_db'
 };
 
-export const baseDomain = 'mizo.co.za';
+// Use environment variable for base domain, fallback to localhost for dev
+export const baseDomain = process.env.BASE_DOMAIN || 'localhost';
