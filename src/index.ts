@@ -54,6 +54,12 @@ const loadTenantDomainsForCors = async () => {
     dynamicCorsOrigins.add('http://127.0.0.1:4200');
     dynamicCorsOrigins.add('http://127.0.0.1:3000');
     
+    // Add local dev domain (dev.co.za)
+    dynamicCorsOrigins.add('http://dev.co.za');
+    dynamicCorsOrigins.add('https://dev.co.za');
+    dynamicCorsOrigins.add('http://dev.co.za:4200');
+    dynamicCorsOrigins.add('https://dev.co.za:4200');
+    
     // Add base domain
     dynamicCorsOrigins.add('http://mizo.co.za');
     dynamicCorsOrigins.add('https://mizo.co.za');
@@ -67,6 +73,16 @@ const loadTenantDomainsForCors = async () => {
         dynamicCorsOrigins.add(`https://${tenant.domain}.mizo.co.za`);
         dynamicCorsOrigins.add(`http://${tenant.domain}.mizo.co.za:4200`);
         dynamicCorsOrigins.add(`https://${tenant.domain}.mizo.co.za:4200`);
+      }
+    });
+    
+    // Add all tenant subdomains for dev.co.za (local development)
+    tenants.forEach(tenant => {
+      if (tenant.domain && tenant.domain !== 'host') {
+        dynamicCorsOrigins.add(`http://${tenant.domain}.dev.co.za`);
+        dynamicCorsOrigins.add(`https://${tenant.domain}.dev.co.za`);
+        dynamicCorsOrigins.add(`http://${tenant.domain}.dev.co.za:4200`);
+        dynamicCorsOrigins.add(`https://${tenant.domain}.dev.co.za:4200`);
       }
     });
     

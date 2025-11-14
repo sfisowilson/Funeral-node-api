@@ -306,10 +306,75 @@ pm2 logs mizo-api --err            # Error logs only
 pm2 flush                          # Clear all logs
 ```
 
+## Deployment Instructions
+
+### Deploy UI
+
+1. **Build the frontend with production configuration:**
+   ```bash
+   cd Frontend
+   ng build --configuration production
+   ```
+
+2. **Deploy to VPS:**
+   ```bash
+   scp -r dist/sakai-ng/* root@102.211.206.197:/var/www/mizo-frontend/
+   ```
+
+3. **Restart Nginx (if needed):**
+   ```bash
+   ssh root@102.211.206.197
+   sudo systemctl restart nginx
+   ```
+
+### Deploy API
+
+1. **Commit and push changes to Git:**
+   ```bash
+   cd NodeAPI
+   git add .
+   git commit -m "Your commit message"
+   git push origin main
+   ```
+
+2. **Pull and restart on the server:**
+   ```bash
+   ssh root@102.211.206.197
+   cd /var/www/mizo-api
+   git pull origin main
+   npm install  # If dependencies changed
+   pm2 restart mizo-api
+   ```
+
+3. **Verify deployment:**
+   ```bash
+   pm2 logs mizo-api --lines 50
+   pm2 status
+   ```
+
+### Debugging Production Issues
+
+**Check if host tenant exists:**
+```bash
+ssh root@102.211.206.197
+mysql -u funeral_user -p funeral_db -e "SELECT id, name, domain, subdomain, isActive FROM Tenants WHERE domain = 'host';"
+```
+
+**Create host tenant if missing:**
+```bash
+mysql -u funeral_user -p funeral_db -e "INSERT INTO Tenants (id, name, domain, subdomain, isActive, createdAt, updatedAt) VALUES ('00000000-0000-0000-0000-000000000001', 'Host Tenant', 'host', 'host', 1, NOW(), NOW());"
+```
+
+**Check TenantSettings:**
+```bash
+mysql -u funeral_user -p funeral_db -e "SELECT * FROM TenantSettings WHERE tenantId = (SELECT id FROM Tenants WHERE domain = 'host');"
+```
+
 ## Deployment Checklist
 
 - [ ] Environment variables configured in `.env`
 - [ ] Database created and migrated
+- [ ] Host tenant created in database (`domain='host'`)
 - [ ] HTTPS certificates installed (`/etc/letsencrypt/live/mizo.co.za/`)
 - [ ] Nginx reverse proxy configured
 - [ ] PM2 process started and saved

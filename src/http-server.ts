@@ -1,4 +1,5 @@
 console.log('Starting HTTP server...');
+require('dotenv').config();
 import http from 'http';
 const app = require('./index');
 
