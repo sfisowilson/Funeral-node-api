@@ -9,6 +9,12 @@ const router = express.Router();
 
 const swaggerSpec = swaggerJSDoc(config);
 
+// Serve JSON endpoint
+router.get('/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
+
 router.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export default router;

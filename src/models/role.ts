@@ -11,6 +11,8 @@ interface RoleAttributes {
   updatedAt?: Date;
   createdBy?: string;
   updatedBy?: string;
+  isDeleted?: boolean;
+  rowVersion?: string;
 }
 
 interface RoleCreationAttributes extends Optional<RoleAttributes, 'id'> {}
@@ -23,6 +25,8 @@ class Role extends Model<RoleAttributes, RoleCreationAttributes> implements Role
   declare readonly updatedAt: Date;
   declare createdBy?: string;
   declare updatedBy?: string;
+  declare isDeleted?: boolean;
+  declare rowVersion?: string;
 }
 
 Role.init(
@@ -46,6 +50,15 @@ Role.init(
     },
     updatedBy: {
       type: DataTypes.UUID,
+      allowNull: true,
+    },
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    rowVersion: {
+      type: DataTypes.STRING,
       allowNull: true,
     },
   },

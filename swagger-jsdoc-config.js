@@ -10,5 +10,5 @@ module.exports = {
       { url: 'http://localhost:3000', description: 'Local Development Server' }
     ],
   },
-  apis: ['./src/routes/*.ts', './src/index.ts'], // Path to the API docs in route files and index.ts
+  apis: ['./src/routes/*.ts', './src/index.ts', './src/schemas/*.ts'], // Path to the API docs in route files, index.ts, and schemas
 };

@@ -41,6 +41,10 @@ const upload = multer({ dest: 'uploads/' }); // files will be stored in the 'upl
  *     responses:
  *       201:
  *         description: File uploaded
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FileMetadataDto'
  *       400:
  *         description: Invalid input
  *       401:
@@ -89,6 +93,12 @@ router.get('/File_GetMyFiles', authMiddleware, getMyFiles);
  *     responses:
  *       200:
  *         description: List of files
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/FileMetadataDto'
  *       401:
  *         description: Unauthorized
  *       404:

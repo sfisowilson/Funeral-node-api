@@ -26,24 +26,24 @@ interface FileMetadataAttributes {
 interface FileMetadataCreationAttributes extends Optional<FileMetadataAttributes, 'id'> {}
 
 class FileMetadata extends Model<FileMetadataAttributes, FileMetadataCreationAttributes> implements FileMetadataAttributes {
-  public id!: string;
-  public tenantId!: string;
-  public userId?: string;
-  public fileName!: string;
-  public filePath!: string;
-  public contentType!: string;
-  public size!: number;
-  public description?: string;
-  public entityType?: string;
-  public entityId?: string;
-  public memberDocumentType?: number;
-  public isRequired?: boolean;
-  public verificationStatus?: string;
-  public verifiedDate?: Date;
-  public verifiedByUserId?: string;
-  public verificationNotes?: string;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  declare id: string;
+  declare tenantId: string;
+  declare userId?: string;
+  declare fileName: string;
+  declare filePath: string;
+  declare contentType: string;
+  declare size: number;
+  declare description?: string;
+  declare entityType?: string;
+  declare entityId?: string;
+  declare memberDocumentType?: number;
+  declare isRequired?: boolean;
+  declare verificationStatus?: string;
+  declare verifiedDate?: Date;
+  declare verifiedByUserId?: string;
+  declare verificationNotes?: string;
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
 }
 
 FileMetadata.init(

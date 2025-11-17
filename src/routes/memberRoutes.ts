@@ -22,6 +22,10 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Member details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MemberDto'
  *       404:
  *         description: Member not found
  *       500:
@@ -38,6 +42,12 @@ router.get('/Member_GetById/:id', getById);
  *     responses:
  *       200:
  *         description: List of members
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MemberDto'
  *       500:
  *         description: Error fetching members
  */

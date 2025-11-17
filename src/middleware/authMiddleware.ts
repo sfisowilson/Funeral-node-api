@@ -22,6 +22,22 @@ export const authMiddleware = async (req: RequestWithTenant, res: Response, next
     }
 
     req.user = user;
+    
+    // Set tenantId and tenantDomain from the JWT token (authenticated user)
+    // This overrides any X-Tenant-ID header for authenticated requests
+    (req as any).tenantId = decoded.tenantId || user.tenantId;
+    
+    // Optionally load the full tenant object if needed
+    if (!req.tenant && decoded.tenantId) {
+      const Tenant = (await import('../models/tenant')).default;
+      const tenant = await Tenant.findByPk(decoded.tenantId);
+      if (tenant) {
+        req.tenant = tenant;
+        (req as any).tenantDomain = tenant.domain;
+        console.log(`  ✅ Tenant from JWT: ${tenant.domain} (${tenant.id})`);
+      }
+    }
+    
     next();
   } catch (error) {
     res.status(401).json({ error: 'Token is not valid' });

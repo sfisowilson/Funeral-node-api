@@ -16,10 +16,20 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
+ *             $ref: '#/components/schemas/TenantCreateUpdateDto'
  *     responses:
  *       200:
  *         description: Tenant registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 tenantId:
+ *                   type: string
+ *                   format: uuid
  *       400:
  *         description: Invalid request
  *       500:
@@ -38,10 +48,17 @@ router.post('/Auth_RegisterTenant', registerTenant);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
+ *             $ref: '#/components/schemas/RegisterRequest'
  *     responses:
  *       200:
  *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  *       400:
  *         description: Invalid request
  *       500:
@@ -88,10 +105,14 @@ router.get('/Auth_DebugClaims', debugClaims);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
+ *             $ref: '#/components/schemas/LoginRequest'
  *     responses:
  *       200:
  *         description: Login successful, returns JWT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResult'
  *       400:
  *         description: Invalid credentials
  *       500:

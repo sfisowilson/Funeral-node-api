@@ -22,6 +22,10 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Beneficiary details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BeneficiaryDto'
  *       404:
  *         description: Beneficiary not found
  *       500:
@@ -38,6 +42,12 @@ router.get('/Beneficiary_GetById/:id', getById);
  *     responses:
  *       200:
  *         description: List of beneficiaries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/BeneficiaryDto'
  *       500:
  *         description: Error fetching beneficiaries
  */
@@ -52,6 +62,12 @@ router.get('/Beneficiary_GetAllBeneficiaries', getAllBeneficiaries);
  *     responses:
  *       200:
  *         description: List of beneficiaries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/BeneficiaryDto'
  *       500:
  *         description: Error fetching beneficiaries
  */
@@ -74,6 +90,12 @@ router.get('/Beneficiary_GetMyBeneficiaries', getMyBeneficiaries);
  *     responses:
  *       200:
  *         description: List of beneficiaries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/BeneficiaryDto'
  *       404:
  *         description: No beneficiaries found
  *       500:
@@ -96,6 +118,10 @@ router.get('/Beneficiary_GetBeneficiariesByMemberId/:memberId', getBeneficiaries
  *     responses:
  *       201:
  *         description: Beneficiary created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BeneficiaryDto'
  *       400:
  *         description: Invalid input
  *       500:
@@ -118,6 +144,10 @@ router.post('/Beneficiary_CreateBeneficiary', createBeneficiary);
  *     responses:
  *       200:
  *         description: Beneficiary updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BeneficiaryDto'
  *       404:
  *         description: Beneficiary not found
  *       500:

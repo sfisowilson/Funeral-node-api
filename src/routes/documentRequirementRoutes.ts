@@ -94,6 +94,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: List of required documents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DocumentRequirement'
  *       404:
  *         description: No documents found
  *       500:
@@ -118,6 +124,10 @@ router.get('/DocumentRequirement_GetRequiredDocuments/:memberId', getRequiredDoc
  *     responses:
  *       200:
  *         description: Compliance status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DocumentComplianceStatus'
  *       404:
  *         description: Member not found
  *       500:
@@ -142,6 +152,12 @@ router.get('/DocumentRequirement_GetComplianceStatus/:memberId', getComplianceSt
  *     responses:
  *       200:
  *         description: List of missing documents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DocumentRequirement'
  *       404:
  *         description: No documents found
  *       500:

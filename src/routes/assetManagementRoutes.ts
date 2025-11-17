@@ -177,12 +177,101 @@ router.put('/AssetManagement_Update', update);
  *         description: Error deleting asset
  */
 router.delete('/AssetManagement_Delete/:id', deleteAsset);
+
+/**
+ * @openapi
+ * /api/AssetManagement/AssetManagement_GetStats:
+ *   get:
+ *     tags:
+ *       - Asset Management
+ *     summary: Get asset statistics
+ *     responses:
+ *       200:
+ *         description: Asset statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AssetStatsDto'
+ *       500:
+ *         description: Error fetching stats
+ */
 router.get('/AssetManagement_GetStats', getStats);
 
 // Checkout/Checkin Routes
+/**
+ * @openapi
+ * /api/AssetManagement/AssetManagement_Checkout:
+ *   post:
+ *     tags:
+ *       - Asset Management
+ *     summary: Checkout an asset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CheckoutAssetDto'
+ *     responses:
+ *       200:
+ *         description: Asset checked out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AssetCheckoutDto'
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Error checking out asset
+ */
 router.post('/AssetManagement_Checkout', checkout);
+
+/**
+ * @openapi
+ * /api/AssetManagement/AssetManagement_Checkin:
+ *   post:
+ *     tags:
+ *       - Asset Management
+ *     summary: Check in an asset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CheckinAssetDto'
+ *     responses:
+ *       200:
+ *         description: Asset checked in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AssetCheckoutDto'
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Error checking in asset
+ */
 router.post('/AssetManagement_Checkin', checkin);
 router.get('/AssetManagement_GetAllCheckouts', getAllCheckouts);
+
+/**
+ * @openapi
+ * /api/AssetManagement/AssetManagement_GetActiveCheckouts:
+ *   get:
+ *     tags:
+ *       - Asset Management
+ *     summary: Get active asset checkouts
+ *     responses:
+ *       200:
+ *         description: List of active checkouts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/AssetCheckoutDto'
+ *       500:
+ *         description: Error fetching active checkouts
+ */
 router.get('/AssetManagement_GetActiveCheckouts', getActiveCheckouts);
 router.get('/AssetManagement_GetOverdueCheckouts', getOverdueCheckouts);
 router.get('/AssetManagement_GetMyCheckouts', getMyCheckouts);

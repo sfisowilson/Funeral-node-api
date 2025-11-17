@@ -20,12 +20,12 @@ import MemberBankingDetail from './memberBankingDetail';
 import MemberOnboardingData from './memberOnboardingData';
 import MemberProfileCompletion from './memberProfileCompletion';
 import NotificationTemplate from './notificationTemplate';
+import OnboardingFieldConfiguration from './onboardingFieldConfiguration';
 import PasswordResetCode from './passwordResetCode';
 import Payment from './payment';
 import Permission from './permission';
 import Policy from './policy';
 import PolicyEnrollment from './policyEnrollment';
-import PremiumSetting from './premiumSetting';
 import RefreshToken from './refreshToken';
 import RequiredDocument from './requiredDocument';
 import Resource from './resource';
@@ -64,12 +64,12 @@ export {
   MemberOnboardingData,
   MemberProfileCompletion,
   NotificationTemplate,
+  OnboardingFieldConfiguration,
   PasswordResetCode,
   Payment,
   Permission,
   Policy,
   PolicyEnrollment,
-  PremiumSetting,
   RefreshToken,
   RequiredDocument,
   Resource,

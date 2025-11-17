@@ -29,6 +29,15 @@ import premiumCalculationRoutes from './routes/premiumCalculationRoutes';
 import lookupRoutes from './routes/lookupRoutes';
 import memberProfileCompletionRoutes from './routes/memberProfileCompletionRoutes';
 import memberRegistrationRoutes from './routes/memberRegistrationRoutes';
+import roleRoutes from './routes/roleRoutes';
+import permissionRoutes from './routes/permissionRoutes';
+import termsRoutes from './routes/termsRoutes';
+import requiredDocumentRoutes from './routes/requiredDocumentRoutes';
+// import onboardingFieldConfigurationRoutes from './routes/onboardingFieldConfigurationRoutes';
+import subscriptionPlanRoutes from './routes/subscriptionPlanRoutes';
+import userRoutes from './routes/userRoutes';
+import userProfileRoutes from './routes/userProfileRoutes';
+import userRoleRoutes from './routes/userRoleRoutes';
 
 
 
@@ -137,6 +146,27 @@ app.use('/api/Auth', authRoutes);
 // Only the GetCurrentTenantSettings endpoint is public for landing page access
 import { Router } from 'express';
 const tenantSettingPublicRouter = Router();
+
+/**
+ * @openapi
+ * /api/TenantSetting/TenantSetting_GetCurrentTenantSettings:
+ *   get:
+ *     tags:
+ *       - Tenant Settings
+ *     summary: Get current tenant settings (public endpoint)
+ *     description: Get tenant settings for the current tenant based on X-Tenant-ID header or subdomain
+ *     responses:
+ *       200:
+ *         description: Tenant settings retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TenantSettingDto'
+ *       404:
+ *         description: Tenant settings not found
+ *       500:
+ *         description: Error fetching tenant settings
+ */
 const tenantSettingGetCurrentHandler = async (req: RequestWithTenant, res: Response) => {
   try {
     const tenantSettingService = (await import('./services/tenantSettingService')).default;
@@ -144,6 +174,14 @@ const tenantSettingGetCurrentHandler = async (req: RequestWithTenant, res: Respo
     if (!tenantId) return res.status(400).json({ message: 'Tenant context missing' });
     const setting = await tenantSettingService.getCurrentTenantSettings(tenantId);
     if (!setting) return res.status(404).json({ message: 'Tenant settings not found for the current tenant.' });
+    
+    console.log('🌐 Sending tenant settings to frontend:', {
+      id: setting.id,
+      logo: setting.logo,
+      favicon: setting.favicon,
+      tenantName: setting.tenantName
+    });
+    
     res.json(setting);
   } catch (err) {
     res.status(500).json({ message: 'An error occurred', error: err });
@@ -164,6 +202,10 @@ app.use('/api/Lookup', lookupRoutes);
 // Public PremiumCalculation routes (before authMiddleware) - needed for landing pages
 app.use('/api/PremiumCalculation', premiumCalculationRoutes);
 
+// Public Terms routes (before authMiddleware) - GetActive endpoint needs to be accessible
+// Individual routes handle their own auth requirements
+app.use('/api/Terms', termsRoutes);
+
 // File Upload routes (before authMiddleware) - public download endpoint needs to be accessible
 // Individual routes handle their own auth requirements
 app.use('/api/FileUpload', fileUploadRoutes);
@@ -171,6 +213,9 @@ app.use('/api/FileUpload', fileUploadRoutes);
 // Apply authMiddleware to all routes after this point
 app.use(authMiddleware);
 
+app.use('/api/RequiredDocument', requiredDocumentRoutes);
+// app.use('/api/OnboardingFieldConfiguration', onboardingFieldConfigurationRoutes);
+app.use('/api/SubscriptionPlan', subscriptionPlanRoutes);
 app.use('/api/Member', memberRoutes);
 app.use('/api/Policy', policyRoutes);
 app.use('/api/Claim', claimRoutes);
@@ -183,6 +228,13 @@ app.use('/api/Asset', assetRoutes);
 app.use('/api/AssetManagement', assetManagementRoutes);
 app.use('/api/DashboardWidget', dashboardWidgetRoutes);
 app.use('/api/DocumentRequirement', documentRequirementRoutes);
+app.use('/api/Role', roleRoutes);
+app.use('/api/Permission', permissionRoutes);
+
+// User routes (after authMiddleware)
+app.use('/api/User', userRoutes);
+app.use('/api/UserProfile', userProfileRoutes);
+app.use('/api/UserRole', userRoleRoutes);
 
 // Protected TenantSetting routes (after authMiddleware)
 app.use('/api/TenantSetting', tenantSettingRoutes);

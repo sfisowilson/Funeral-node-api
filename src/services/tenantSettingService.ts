@@ -1,4 +1,5 @@
 import { TenantSetting } from '../models/tenantSetting';
+import Tenant from '../models/tenant';
 import { Op } from 'sequelize';
 
 export default {
@@ -7,7 +8,46 @@ export default {
   },
 
   async getCurrentTenantSettings(tenantId: string) {
-    return TenantSetting.findOne({ where: { tenantId } });
+    // Join with Tenants table to get tenant name and domain, matching C# implementation
+    console.log('📋 Getting current tenant settings for:', tenantId);
+    const setting = await TenantSetting.findOne({ 
+      where: { tenantId },
+      include: [{
+        model: Tenant,
+        as: 'tenant',
+        attributes: ['name', 'domain']
+      }]
+    });
+    
+    if (!setting) {
+      console.log('❌ No tenant setting found for:', tenantId);
+      return null;
+    }
+    
+    console.log('Raw setting from DB:', {
+      id: setting.id,
+      logo: setting.logo,
+      favicon: setting.favicon,
+      tenant: setting.get('tenant')
+    });
+    
+    // Transform to match the DTO structure with tenantName and tenantDomain from joined tenant
+    const result: any = setting.toJSON();
+    if (result.tenant) {
+      result.tenantName = result.tenant.name;
+      result.tenantDomain = result.tenant.domain;
+      delete result.tenant; // Remove the nested tenant object
+    }
+    
+    console.log('✅ Returning tenant settings:', {
+      id: result.id,
+      logo: result.logo,
+      favicon: result.favicon,
+      tenantName: result.tenantName,
+      tenantDomain: result.tenantDomain
+    });
+    
+    return result;
   },
 
   async getAllTenantSettings(offset = 0, limit = 50) {

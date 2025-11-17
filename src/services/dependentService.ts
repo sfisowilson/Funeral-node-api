@@ -64,8 +64,12 @@ export const updateDependent = async (req: RequestWithTenant, res: Response) => 
     if (!req.tenant) {
       return res.status(400).json({ error: 'Tenant not found' });
     }
-    const { id } = req.params;
-    const { name, email, phone1, phone2, identificationNumber, dependentType, dateOfBirth } = req.body;
+    const { id, name, email, phone1, phone2, identificationNumber, dependentType, dateOfBirth } = req.body;
+    
+    if (!id) {
+      return res.status(400).json({ error: 'Dependent ID is required' });
+    }
+    
     const [updated] = await Dependent.update(
       { name, email, phone1, phone2, identificationNumber, dependentType, dateOfBirth }, 
       { where: { id, tenantId: req.tenant.id } }

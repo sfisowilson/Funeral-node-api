@@ -22,6 +22,10 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Policy details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PolicyDto'
  *       404:
  *         description: Policy not found
  *       500:
@@ -38,6 +42,12 @@ router.get('/Policy_GetById/:id', getById);
  *     responses:
  *       200:
  *         description: List of policies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/PolicyDto'
  *       500:
  *         description: Error fetching policies
  */

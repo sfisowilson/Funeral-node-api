@@ -53,14 +53,29 @@ export const uploadFile = async (req: RequestWithTenant, res: Response) => {
             isRequired: isRequired || false,
             verificationStatus: 'Pending',
         } as any);
+        
+        console.log('📁 File metadata created:', {
+            id: fileMeta.id,
+            fileName: fileMeta.fileName,
+            entityType: fileMeta.entityType,
+            dataValues: fileMeta.dataValues
+        });
 
         // If uploading logo or favicon, update TenantSettings
         if (entityType === 'Logo' || entityType === 'Favicon') {
             try {
+                console.log(`📸 Processing ${entityType} upload for tenant ${tenantId}`);
                 let tenantSetting = await TenantSetting.findOne({ where: { tenantId } });
+                
+                console.log('Current TenantSetting:', tenantSetting ? {
+                    id: tenantSetting.id,
+                    logo: tenantSetting.logo,
+                    favicon: tenantSetting.favicon
+                } : 'null');
                 
                 // Create TenantSetting if it doesn't exist
                 if (!tenantSetting) {
+                    console.log('Creating new TenantSetting for tenant', tenantId);
                     tenantSetting = await TenantSetting.create({
                         tenantId,
                         settings: JSON.stringify({}),
@@ -68,16 +83,41 @@ export const uploadFile = async (req: RequestWithTenant, res: Response) => {
                 }
                 
                 // Update the appropriate field with the file ID
+                const fileId = fileMeta.id || fileMeta.get('id') || (fileMeta as any).dataValues?.id;
+                console.log(`File ID extracted: ${fileId}`);
+                
                 if (entityType === 'Logo') {
-                    tenantSetting.logo = fileMeta.id;
+                    console.log(`Setting logo to file ID: ${fileId}`);
+                    tenantSetting.logo = fileId;
                 } else if (entityType === 'Favicon') {
-                    tenantSetting.favicon = fileMeta.id;
+                    console.log(`Setting favicon to file ID: ${fileId}`);
+                    tenantSetting.favicon = fileId;
                 }
                 
-                await tenantSetting.save();
-                console.log(`${entityType} updated in TenantSettings for tenant ${tenantId}`);
+                console.log('About to save TenantSetting with:', {
+                    id: tenantSetting.id,
+                    logo: tenantSetting.logo,
+                    favicon: tenantSetting.favicon,
+                    changed: tenantSetting.changed()
+                });
+                
+                const saved = await tenantSetting.save();
+                console.log('Save result:', saved ? 'Success' : 'Failed');
+                
+                // Verify the save by reloading
+                await tenantSetting.reload();
+                console.log(`✅ ${entityType} updated in TenantSettings for tenant ${tenantId}`);
+                console.log('Updated TenantSetting after reload:', {
+                    id: tenantSetting.id,
+                    logo: tenantSetting.logo,
+                    favicon: tenantSetting.favicon,
+                    dataValues: {
+                        logo: (tenantSetting as any).dataValues.logo,
+                        favicon: (tenantSetting as any).dataValues.favicon
+                    }
+                });
             } catch (settingError) {
-                console.error(`Error updating TenantSettings with ${entityType}:`, settingError);
+                console.error(`❌ Error updating TenantSettings with ${entityType}:`, settingError);
                 // Don't fail the upload if TenantSetting update fails
                 // The file was successfully uploaded
             }

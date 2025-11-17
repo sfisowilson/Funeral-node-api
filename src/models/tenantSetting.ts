@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db/database';
 import { v4 as uuidv4 } from 'uuid';
+import Tenant from './tenant';
 
 export interface TenantSettingAttributes {
   id: string;
@@ -67,6 +68,12 @@ TenantSetting.init(
     timestamps: true,
   }
 );
+
+// Define association
+TenantSetting.belongsTo(Tenant, {
+  foreignKey: 'tenantId',
+  as: 'tenant'
+});
 
 export default TenantSetting;
 

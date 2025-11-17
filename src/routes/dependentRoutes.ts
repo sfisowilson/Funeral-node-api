@@ -22,6 +22,10 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Dependent details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DependentDto'
  *       404:
  *         description: Dependent not found
  *       500:
@@ -38,6 +42,12 @@ router.get('/Dependent_GetById/:id', getById);
  *     responses:
  *       200:
  *         description: List of dependents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DependentDto'
  *       500:
  *         description: Error fetching dependents
  */
@@ -52,6 +62,12 @@ router.get('/Dependent_GetAllDependents', getAllDependents);
  *     responses:
  *       200:
  *         description: List of dependents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DependentDto'
  *       500:
  *         description: Error fetching dependents
  */
@@ -74,6 +90,12 @@ router.get('/Dependent_GetMyDependents', getMyDependents);
  *     responses:
  *       200:
  *         description: List of dependents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DependentDto'
  *       404:
  *         description: No dependents found
  *       500:
@@ -96,6 +118,10 @@ router.get('/Dependent_GetDependentsByMemberId/:memberId', getDependentsByMember
  *     responses:
  *       201:
  *         description: Dependent created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DependentDto'
  *       400:
  *         description: Invalid input
  *       500:
@@ -118,6 +144,10 @@ router.post('/Dependent_CreateDependent', createDependent);
  *     responses:
  *       200:
  *         description: Dependent updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DependentDto'
  *       404:
  *         description: Dependent not found
  *       500:
