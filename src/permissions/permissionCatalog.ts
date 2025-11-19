@@ -110,4 +110,5 @@ export const PERMISSION_CATALOG = [
   
   // Admin
   'Admin',
+  'Permission.Admin.update',
 ];

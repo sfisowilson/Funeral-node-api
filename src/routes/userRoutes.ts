@@ -30,7 +30,7 @@ const router = express.Router();
  */
 router.get('/User_GetAll', authMiddleware, async (req, res) => {
     try {
-        const tenantId = req.query.tenantId as string;
+        const tenantId = (req as any).tenantId;
         const users = await userService.getAllUsers(tenantId);
         res.json(users);
     } catch (error: any) {
@@ -199,7 +199,7 @@ router.delete('/User_Delete', authMiddleware, async (req, res) => {
 router.get('/User_Search', authMiddleware, async (req, res) => {
     try {
         const searchTerm = req.query.searchTerm as string;
-        const tenantId = req.query.tenantId as string;
+        const tenantId = (req as any).tenantId;
         const users = await userService.searchUsers(searchTerm, tenantId);
         res.json(users);
     } catch (error: any) {

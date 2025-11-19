@@ -22,11 +22,11 @@ export const uploadFile = async (req: RequestWithTenant, res: Response) => {
         console.log(`📤 File Upload - Request: hostname=${req.hostname}, tenantDomain=${tenantDomain}, tenantId=${tenantId}`);
         
         // Get query parameters
-        const entityType = req.query.entityType as string | undefined;
+        const entityType = req.body.entityType as string | undefined;
         const entityId = req.query.entityId as string | undefined;
         const documentType = req.query.documentType as string | undefined;
         const memberDocumentType = req.query.memberDocumentType ? parseInt(req.query.memberDocumentType as string) : undefined;
-        const isRequired = req.query.isRequired === 'true';
+        const isRequired = req.body.isRequired === 'true';
 
         if (!tenantId) {
             console.error(`❌ File Upload - Tenant not found`);

@@ -94,6 +94,7 @@ export const registerTenant = async (req: Request, res: Response) => {
       'Permission.rolepermission.view',
       'Permission.rolepermission.update',
       'Permission.rolepermission.delete',
+      'Permission.Admin.update'
     ];
 
     // Create permissions and assign to admin role
