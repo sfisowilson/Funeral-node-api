@@ -1,4 +1,3 @@
-
 import { Response } from 'express';
 import { RequestWithTenant } from '../middleware/tenantMiddleware';
 import Member from '../models/member';
@@ -8,6 +7,7 @@ import Role from '../models/role';
 import UserRole from '../models/userRole';
 import PolicyEnrollment from '../models/policyEnrollment';
 import MemberProfileCompletion from '../models/memberProfileCompletion';
+import emailService from './emailService';
 
 export const checkIdNumber = async (req: RequestWithTenant, res: Response) => {
   try {
@@ -71,27 +71,21 @@ export const registerNewMember = async (req: RequestWithTenant, res: Response) =
   try {
     if (!req.tenant) return res.status(400).json({ error: 'Tenant not found' });
     const dto = req.body;
+    // Fetch tenant settings
+    const tenantSettingService = require('./tenantSettingService').default;
+    const tenantSettings = await tenantSettingService.getCurrentTenantSettings(req.tenant.id);
+    const requirePolicy = tenantSettings?.requirePolicyOnMemberRegistration;
+
     if (!dto.idNumber || typeof dto.idNumber !== 'string' || dto.idNumber.length !== 13) return res.status(400).json({ error: 'Invalid ID number' });
     if (!dto.email || typeof dto.email !== 'string') return res.status(400).json({ error: 'Invalid email' });
     if (!dto.password || typeof dto.password !== 'string' || dto.password.length < 6) return res.status(400).json({ error: 'Invalid password' });
-    if (!dto.firstNames || !dto.surname || !dto.phoneNumber || !dto.selectedCoverAmount) return res.status(400).json({ error: 'Missing required fields' });
+    if (!dto.firstNames || !dto.surname || !dto.phoneNumber) return res.status(400).json({ error: 'Missing required fields' });
+    if (requirePolicy && !dto.policyId) return res.status(400).json({ error: 'Policy selection is required for registration.' });
     if (await Member.findOne({ where: { identificationNumber: dto.idNumber, tenantId: req.tenant.id } })) {
       return res.json({ succeeded: false, message: 'This ID number is already registered.' });
     }
     if (await User.findOne({ where: { email: dto.email } })) {
       return res.json({ succeeded: false, message: 'Email already registered.' });
-    }
-    let policy = await Policy.findOne({ where: { tenantId: req.tenant.id, status: 'Active' } });
-    if (!policy) {
-      policy = await Policy.create({
-        policyNumber: `POL${Date.now()}`,
-        description: `Funeral Cover - R${dto.selectedCoverAmount.toLocaleString()}`,
-        payoutAmount: dto.selectedCoverAmount,
-        premiumAmount: dto.selectedCoverAmount,
-        status: 'Active',
-        tenantId: req.tenant.id,
-        startDate: new Date()
-      });
     }
     const bcrypt = require('bcryptjs');
     const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -120,14 +114,17 @@ export const registerNewMember = async (req: RequestWithTenant, res: Response) =
       dateOfBirth: dto.dateOfBirth,
       tenantId: req.tenant.id
     });
-    await PolicyEnrollment.create({
-      memberId: newMember.id,
-      policyId: policy.id,
-      enrollmentDate: new Date(),
-      tenantId: req.tenant.id
-    });
+    // Only enroll in policy if required and provided
+    if (requirePolicy && dto.policyId) {
+      await PolicyEnrollment.create({
+        memberId: newMember.id,
+        policyId: dto.policyId,
+        enrollmentDate: new Date(),
+        tenantId: req.tenant.id
+      });
+    }
     await MemberProfileCompletion.create({
-      memberId: newMember.id,
+      memberId: newMember.dataValues.id,
       tenantId: req.tenant.id,
       hasDependents: false,
       hasBeneficiaries: false,
@@ -139,11 +136,41 @@ export const registerNewMember = async (req: RequestWithTenant, res: Response) =
       createdAt: new Date(),
       updatedAt: new Date()
     });
-    res.json({ succeeded: true, message: 'Registration successful! Welcome to the platform.' });
+    const welcomeSubject = 'Welcome to Funeral App - Important Next Steps!';
+    const welcomeHtml = `
+      <p>Dear ${dto.firstNames},</p>
+      <p>Welcome to Funeral App! We're excited to have you on board.</p>
+      <p>To get the most out of your account and ensure your coverage is active, please complete the following important steps:</p>
+      <ul>
+        <li><b>Prepare Your Documents:</b> Please gather any required identification or supporting documents.</li>
+        <li><b>Complete Onboarding:</b> Log in to your account and navigate to the onboarding section. Here you will need to:
+          <ul>
+            <li>Add your dependents and beneficiaries.</li>
+            <li>Provide your banking details for seamless payments.</li>
+            <li>Review and accept our terms and conditions.</li>
+          </ul>
+        </li>
+      </ul>
+      <p>Completing these steps will ensure your profile is complete and your policy is fully active.</p>
+      <p>If you have any questions, please do not hesitate to contact our support team.</p>
+      <p>Thank you,</p>
+      <p>The Funeral App Team</p>
+    `;
+
+    try {
+      await emailService.sendEmail(req.tenant.id, dto.email, welcomeSubject, welcomeHtml);
+      console.log(`Welcome email sent to ${dto.email}`);
+    } catch (emailError) {
+      console.error(`Failed to send welcome email to ${dto.email}:`, emailError);
+      // Log the error but don't prevent registration from succeeding
+    }
+
+    res.json({ succeeded: true, message: 'Registration successful! Welcome to the platform. A welcome email has been sent with next steps.' });
   } catch (error) {
     res.status(500).json({ error: 'Error registering new member' });
   }
 };
+
 
 // Step 2b: Send OTP to existing member (dependent account creation)
 interface OtpCache {

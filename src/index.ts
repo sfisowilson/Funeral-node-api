@@ -1,5 +1,3 @@
-// ...existing code...
-
 import { LandingPageComponent, LandingPageLayout, TenantSetting } from './models';
 
 import express, { Response } from 'express';
@@ -38,7 +36,12 @@ import subscriptionPlanRoutes from './routes/subscriptionPlanRoutes';
 import userRoutes from './routes/userRoutes';
 import userProfileRoutes from './routes/userProfileRoutes';
 import userRoleRoutes from './routes/userRoleRoutes';
-
+import { getAllPolicies } from "./services/policyService";
+import swaggerRouter from './swagger';
+import { Router } from 'express';
+import { getLandingPage } from './services/landingPageService';
+import { createOrUpdateLandingPage } from './services/landingPageService';
+import { registerNewMember } from './services/memberRegistrationService';
 
 
 
@@ -136,15 +139,12 @@ app.get('/health', (req, res) => res.send('OK'));
 app.use(express.json());
 app.use(tenantMiddleware);
 
-import swaggerRouter from './swagger';
 app.use('/api-docs', swaggerRouter);
-
 app.use('/api/Tenant', tenantRoutes);
 app.use('/api/Auth', authRoutes);
 
 // Public TenantSetting routes (before authMiddleware)
 // Only the GetCurrentTenantSettings endpoint is public for landing page access
-import { Router } from 'express';
 const tenantSettingPublicRouter = Router();
 
 /**
@@ -191,7 +191,7 @@ tenantSettingPublicRouter.get('/TenantSetting_GetCurrentTenantSettings', tenantS
 app.use('/api/TenantSetting', tenantSettingPublicRouter);
 
 // Public LandingPage routes (before authMiddleware)
-import { getLandingPage } from './services/landingPageService';
+
 const landingPagePublicRouter = express.Router();
 landingPagePublicRouter.get('/LandingPage_GetLandingPage', getLandingPage);
 app.use('/api/LandingPage', landingPagePublicRouter);
@@ -206,9 +206,18 @@ app.use('/api/PremiumCalculation', premiumCalculationRoutes);
 // Individual routes handle their own auth requirements
 app.use('/api/Terms', termsRoutes);
 
+// Public MemberRegistration routes (before authMiddleware)
+app.use('/api/MemberRegistration', memberRegistrationRoutes);
+
 // File Upload routes (before authMiddleware) - public download endpoint needs to be accessible
 // Individual routes handle their own auth requirements
 app.use('/api/FileUpload', fileUploadRoutes);
+
+// Public Policy routes (before authMiddleware)
+import { Router as ExpressRouter } from 'express';
+const policyPublicRouter = ExpressRouter();
+policyPublicRouter.get('/Policy_GetAllPolicies', getAllPolicies);
+app.use('/api/Policy', policyPublicRouter);
 
 // Apply authMiddleware to all routes after this point
 app.use(authMiddleware);
@@ -240,10 +249,8 @@ app.use('/api/UserRole', userRoleRoutes);
 app.use('/api/TenantSetting', tenantSettingRoutes);
 
 app.use('/api/MemberProfileCompletion', memberProfileCompletionRoutes);
-app.use('/api/MemberRegistration', memberRegistrationRoutes);
 
 // Register the protected POST endpoint for LandingPage (after authMiddleware)
-import { createOrUpdateLandingPage } from './services/landingPageService';
 const landingPageProtectedRouter = express.Router();
 landingPageProtectedRouter.post('/LandingPage_CreateOrUpdateLandingPage', createOrUpdateLandingPage);
 app.use('/api/LandingPage', landingPageProtectedRouter);

@@ -57,8 +57,17 @@ router.get('/MemberRegistration_GetPolicyOptions', getPolicyOptions);
  *           schema:
  *             $ref: '#/components/schemas/RegisterNewMemberDto'
  *     responses:
- *       201:
- *         description: Member registered
+ *       200:
+ *         description: Registration status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 succeeded:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
  *       400:
  *         description: Invalid input
  *       500:

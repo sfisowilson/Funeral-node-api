@@ -32,7 +32,22 @@ export const getAllDependents = async (req: RequestWithTenant, res: Response) =>
   }
 };
 
-export const getMyDependents = async (req: RequestWithTenant, res: Response) => { res.status(501).send('Not Implemented'); };
+export const getMyDependents = async (req: RequestWithTenant, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const tenantId = req.tenant?.id;
+    if (!userId || !tenantId) {
+      return res.status(401).json({ error: 'Invalid user or tenant context' });
+    }
+
+    // Find dependents for this member and tenant
+    const dependents = await Dependent.findAll({ where: { memberId: userId, tenantId } });
+    return res.json(dependents);
+  } catch (error) {
+    console.error('Error getting my dependents:', error);
+    return res.status(500).json({ message: 'An error occurred while retrieving dependents.' });
+  }
+};
 
 export const getDependentsByMemberId = async (req: RequestWithTenant, res: Response) => { res.status(501).send('Not Implemented'); };
 

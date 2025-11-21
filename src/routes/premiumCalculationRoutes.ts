@@ -194,7 +194,7 @@ router.get('/PremiumCalculation_CalculateForMember/:memberId', async (req: Reque
 router.get('/PremiumCalculation_GetMyPremium', async (req: RequestWithTenant, res: Response) => {
     try {
         const tenantId = req.tenant?.id;
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
         
         if (!tenantId) {
             return res.status(400).json({ error: 'Tenant context required' });
