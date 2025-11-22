@@ -85,3 +85,6 @@ export {
   UserRole,
   VerificationRequest,
 };
+
+// Setup associations
+Member.hasMany(Policy, { as: 'policies', foreignKey: 'memberId' });

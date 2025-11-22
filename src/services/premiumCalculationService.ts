@@ -266,25 +266,49 @@ export class PremiumCalculationService {
    * Calculate premium for specific member (C# CalculateMemberPremiumAsync)
    * Retrieves member's policies and dependents from database
    */
-  async calculateMemberPremiumAsync(memberId: string, tenantId: string): Promise<PremiumCalculationResult> {
+  async calculateMemberPremiumAsync(tenantId: string, memberId: string): Promise<PremiumCalculationResult> {
     try {
-      // Get member with policies
-      const member = await Member.findOne({
-        where: { id: memberId, tenantId },
-        include: [{ association: 'policies' }],
-      });
+      // Get tenant settings to check requirePolicySelection
+      const tenantSetting = await TenantSetting.findOne({ where: { tenantId } });
+      let requirePolicySelection = false;
+      if (tenantSetting && tenantSetting.settings) {
+        try {
+          const settings = typeof tenantSetting.settings === 'string' ? JSON.parse(tenantSetting.settings) : tenantSetting.settings;
+          requirePolicySelection = settings?.requirePolicySelection ?? false;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      // Only include policies if requirePolicySelection is true
+      let member;
+      if (requirePolicySelection && typeof Member.associations?.policies !== 'undefined') {
+        member = await Member.findOne({
+          where: { id: memberId, tenantId },
+          include: [{ association: 'policies' }],
+        });
+      } else {
+        member = await Member.findOne({
+          where: { id: memberId, tenantId },
+        });
+      }
 
       if (!member) {
         throw new Error(`Member ${memberId} not found.`);
       }
 
       // Get active policy - use CoverageAmount or PayoutAmount
-      const policies = (member as any).policies || [];
+      let policies: any[] = [];
+      if (requirePolicySelection && typeof Member.associations?.policies !== 'undefined') {
+        policies = (member as any).policies || [];
+      }
       let coverAmount = 10000; // Default
 
       if (policies.length > 0) {
         const policy = policies[0];
         coverAmount = policy.coverageAmount || policy.payoutAmount || 10000;
+      } else if (requirePolicySelection) {
+        throw new Error('Policy selection is required for premium calculation, but no policy exists for this member.');
       }
 
       // Get dependents with DOB extraction

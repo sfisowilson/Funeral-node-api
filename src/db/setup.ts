@@ -74,8 +74,19 @@ async function setupDatabase() {
     ];
     console.log(`   ✅ ${models.length} models registered\n`);
 
-    // Step 4: Sync (create tables)
-    console.log('Step 4️⃣  Creating database tables (force: true will drop existing tables)...');
+    // Step 4: Ensure Policies.memberId column exists
+    console.log('🔎 Checking for memberId column in Policies table...');
+    const [columns] = await sequelize.query("SHOW COLUMNS FROM Policies LIKE 'memberId'");
+    if (!Array.isArray(columns) || columns.length === 0) {
+      console.log('➕ Adding memberId column to Policies table...');
+      await sequelize.query("ALTER TABLE Policies ADD COLUMN memberId CHAR(36) NULL;");
+      console.log('✅ memberId column added.');
+    } else {
+      console.log('✅ memberId column already exists.');
+    }
+
+    // Step 5: Sync (create tables)
+    console.log('Step 5️⃣  Creating database tables (force: true will drop existing tables)...');
     console.log('   ⏳ This may take a moment...\n');
     await sequelize.sync({ force: true });
     console.log('   ✅ All tables created\n');

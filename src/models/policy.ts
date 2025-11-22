@@ -25,6 +25,7 @@ interface PolicyAttributes {
   updatedAt?: Date;
   createdBy?: string;
   updatedBy?: string;
+  memberId?: string;
 }
 
 interface PolicyCreationAttributes extends Optional<PolicyAttributes, 'id'> {}
@@ -32,6 +33,7 @@ interface PolicyCreationAttributes extends Optional<PolicyAttributes, 'id'> {}
 class Policy extends Model<PolicyAttributes, PolicyCreationAttributes> implements PolicyAttributes {
   public id!: string;
   public tenantId!: string;
+  public memberId?: string;
   public name?: string;
   public policyNumber?: string;
   public description?: string;
@@ -61,6 +63,10 @@ Policy.init(
     tenantId: {
       type: DataTypes.UUID,
       allowNull: false,
+    },
+    memberId: {
+      type: DataTypes.UUID,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING(255),

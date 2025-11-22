@@ -2,6 +2,7 @@
 import { Response } from 'express';
 import { RequestWithTenant } from '../middleware/tenantMiddleware';
 import Dependent from '../models/dependent';
+import Member from '../models/member';
 
 export const getById = async (req: RequestWithTenant, res: Response) => {
   try {
@@ -57,6 +58,20 @@ export const createDependent = async (req: RequestWithTenant, res: Response) => 
     if (!req.tenant) {
       return res.status(400).json({ error: 'Tenant not found' });
     }
+
+    let memberIdValue: string = memberId;
+
+    const userEmail = req.user?.email;
+
+    if (!memberIdValue) {
+      const member = await Member.findOne({ where: { email: userEmail, tenantId: req.tenant.id } });
+      if (member) {
+        memberIdValue = member?.dataValues?.id;
+      }
+    }
+    
+
+
     const dependent = await Dependent.create({ 
       name, 
       email, 
@@ -65,7 +80,7 @@ export const createDependent = async (req: RequestWithTenant, res: Response) => 
       identificationNumber, 
       dependentType, 
       dateOfBirth, 
-      memberId, 
+      memberId : memberIdValue, 
       tenantId: req.tenant.id 
     });
     res.status(201).json(dependent);

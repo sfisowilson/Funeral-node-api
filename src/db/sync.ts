@@ -51,7 +51,18 @@ const syncDatabase = async () => {
     await createDatabaseIfNotExists();
     console.log('✅ Database ready\n');
 
-    // Step 2: Sync all models
+    // Step 2: Ensure Policies.memberId column exists
+    console.log('🔎 Checking for memberId column in Policies table...');
+    const [columns] = await sequelize.query("SHOW COLUMNS FROM Policies LIKE 'memberId'");
+    if (!Array.isArray(columns) || columns.length === 0) {
+      console.log('➕ Adding memberId column to Policies table...');
+      await sequelize.query("ALTER TABLE Policies ADD COLUMN memberId CHAR(36) NULL;");
+      console.log('✅ memberId column added.');
+    } else {
+      console.log('✅ memberId column already exists.');
+    }
+
+    // Step 3: Sync all models
     console.log('🔄 Syncing all models with database...');
     await sequelize.sync({ force: true });
     console.log('✅ All models synced\n');
