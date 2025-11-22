@@ -23,6 +23,7 @@ import tenantSettingRoutes from './routes/tenantSettingRoutes';
 import documentRequirementRoutes from './routes/documentRequirementRoutes';
 import fileUploadRoutes from './routes/fileUploadRoutes';
 import premiumCalculationRoutes from './routes/premiumCalculationRoutes';
+import premiumCalculationPrivateRoutes from './routes/premiumCalculationPrivateRoutes';
 
 import lookupRoutes from './routes/lookupRoutes';
 import memberProfileCompletionRoutes from './routes/memberProfileCompletionRoutes';
@@ -222,6 +223,7 @@ app.use('/api/Policy', policyPublicRouter);
 // Apply authMiddleware to all routes after this point
 app.use(authMiddleware);
 
+app.use('/api/PremiumCalculation', premiumCalculationPrivateRoutes);
 app.use('/api/RequiredDocument', requiredDocumentRoutes);
 // app.use('/api/OnboardingFieldConfiguration', onboardingFieldConfigurationRoutes);
 app.use('/api/SubscriptionPlan', subscriptionPlanRoutes);
